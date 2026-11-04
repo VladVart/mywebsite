@@ -1,1 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Redirecting…</title>
+
+<!-- ============================================================
+     СТРАНИЦА-РЕДИРЕКТ ДЛЯ QR-КОДА
+     Что она делает:
+       1. Загружает Google Analytics
+       2. Отправляет событие "qr_scan" в GA
+       3. Как только GA подтвердил отправку — мгновенно перекидывает на Instagram
+       4. Если GA заблокирован (adblock) или тормозит — всё равно перекидывает
+          через MAX_WAIT_MS миллисекунд, чтобы человек не застрял
+     ============================================================ -->
+
+<!-- ВОТ ЭТУ СТРОЧКУ НАДО ПОМЕНЯТЬ: замени G-XXXXXXXXXX на свой Measurement ID (тот же, что в index.html) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-RK22FTW190"></script>
+
+<script>
+  /* ============================================================
+     НАСТРОЙКИ — МЕНЯЙ ТОЛЬКО ЭТИ ТРИ СТРОЧКИ
+     ============================================================ */
+
+  // ВОТ ЭТУ СТРОЧКУ НАДО ПОМЕНЯТЬ: ссылка на твой Instagram
+  var INSTAGRAM_URL = "https://www.instagram.com/hyulewines/";
+
+  // ВОТ ЭТУ СТРОЧКУ НАДО ПОМЕНЯТЬ: Measurement ID из Google Analytics (формат G-XXXXXXXXXX)
+  var GA_ID = "G-RK22FTW190";
+
+  // ВОТ ЭТУ СТРОЧКУ НАДО ПОМЕНЯТЬ: максимальное время ожидания Google Analytics в миллисекундах.
+  // 1000 = 1 секунда. Меньше — быстрее редирект, но выше шанс потерять часть данных.
+  var MAX_WAIT_MS = 1000;
+
+  /* ============================================================
+     ДАЛЬШЕ ЛУЧШЕ НЕ ТРОГАТЬ
+     ============================================================ */
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+
+  var redirected = false;
+  function go() {
+    if (redirected) return;       // защита от двойного срабатывания
+    redirected = true;
+    // replace() не оставляет эту страницу в истории, кнопка «Назад» не зациклится
+    window.location.replace(INSTAGRAM_URL);
+  }
+
+  gtag('js', new Date());
+
+  // send_page_view:false — стандартный page_view не нужен, шлём своё событие
+  gtag('config', GA_ID, { send_page_view: false });
+
+  // Событие «человек отсканировал QR-код».
+  // В GA4: Отчёты → Взаимодействие → События → qr_scan
+  gtag('event', 'qr_scan', {
+    page_location: window.location.href,   // сохраняет UTM-метки, если они есть в ссылке QR
+    page_title: 'QR Redirect',
+    transport_type: 'beacon',              // отправка, которая не обрывается при уходе со страницы
+    event_callback: go,                    // редирект сразу после подтверждения от GA
+    event_timeout: MAX_WAIT_MS
+  });
+
+  // Запасной вариант: если GA заблокирован или не ответил — уходим всё равно
+  setTimeout(go, MAX_WAIT_MS);
+</script>
+
+<!-- Если у человека отключён JavaScript — обычный редирект через 1 секунду.
+     ВОТ ЭТУ СТРОЧКУ НАДО ПОМЕНЯТЬ: ссылка на Instagram (после url=) -->
+<noscript>
+  <meta http-equiv="refresh" content="1;url=https://www.instagram.com/YOUR_INSTAGRAM/">
+</noscript>
+
+<style>
+  /* Фон и цвет текста на долю секунды, пока идёт редирект */
+  body {
+    margin: 0; height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    background: #1a0a0f;   /* ВОТ ЭТУ СТРОЧКУ НАДО ПОМЕНЯТЬ, ЧТОБЫ ИЗМЕНИТЬ ЦВЕТ ФОНА */
+    color: #f3e9dc;        /* ВОТ ЭТУ СТРОЧКУ НАДО ПОМЕНЯТЬ, ЧТОБЫ ИЗМЕНИТЬ ЦВЕТ ТЕКСТА */
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+  a { color: #c9a24d; }
+</style>
+</head>
+<body>
+  <!-- Этот текст пользователь увидит на долю секунды.
+       ВОТ ЭТУ СТРОЧКУ НАДО ПОМЕНЯТЬ: ссылка на Instagram -->
+  <p>Taking you to Instagram…<br>
+     <a href="https://www.instagram.com/YOUR_INSTAGRAM/">Tap here if nothing happens</a></p>
+</body>
+</html>
 
