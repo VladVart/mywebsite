@@ -3,8 +3,16 @@
     "title": "Hyule Wines — wine with character",
     "description": "Family winery: signature wines made from grapes grown in our own vineyards. Tastings, our story, contacts."
   },
-  "brand": { "first": "Hyule", "second": "Wines" },
-  "nav": { "home": "Home", "wine": "Wine", "story": "Our Story", "contacts": "Contacts" },
+  "brand": {
+    "first": "Hyule",
+    "second": "Wines"
+  },
+  "nav": {
+    "home": "Home",
+    "wine": "Wine",
+    "story": "OUR HISTORY",
+    "contacts": "Contacts"
+  },
   "theme": {
     "bg": "#06121c",
     "bg2": "#0a1c2b",
@@ -59,7 +67,7 @@
         "price": "from $000",
         "unit": "/ bottle",
         "bottle": "#4aa8d6",
-        "image": ""
+        "image": "images/photo-2025-10-31-11-05-40-mweteitb.jpg"
       }
     ]
   },
@@ -70,15 +78,40 @@
     "p2": "Today we still harvest by hand, carefully select every cluster and give each wine the time it needs to mature. No rush, only patience, hard work and a little bit of magic.",
     "image": "",
     "stats": [
-      { "n": "25+", "label": "years of experience" },
-      { "n": "40+", "label": "hectares of vines" },
-      { "n": "12+", "label": "awards" }
+      {
+        "n": "25+",
+        "label": "years of experience"
+      },
+      {
+        "n": "40+",
+        "label": "hectares of vines"
+      },
+      {
+        "n": "12+",
+        "label": "awards"
+      }
     ],
     "timeline": [
-      { "year": "1999", "title": "The first vine", "text": "We planted our first rows on a slope inherited from our grandfather." },
-      { "year": "2008", "title": "The first barrel", "text": "We released our first batch and bottled it for friends and family." },
-      { "year": "2016", "title": "Our own winery", "text": "We built a cellar and opened our doors to the first guests." },
-      { "year": "Today", "title": "Wine with character", "text": "We craft three collections and look forward to welcoming you for a tasting." }
+      {
+        "year": "1999",
+        "title": "The first vine",
+        "text": "We planted our first rows on a slope inherited from our grandfather."
+      },
+      {
+        "year": "2008",
+        "title": "The first barrel",
+        "text": "We released our first batch and bottled it for friends and family."
+      },
+      {
+        "year": "2016",
+        "title": "Our own winery",
+        "text": "We built a cellar and opened our doors to the first guests."
+      },
+      {
+        "year": "Today",
+        "title": "Wine with character",
+        "text": "We craft three collections and look forward to welcoming you for a tasting."
+      }
     ]
   },
   "contacts": {
