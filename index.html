@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hyule Wines — wine with character</title>
+<meta name="description" id="metaDesc" content="Family winery: signature wines made from grapes grown in our own vineyards. Tastings, our story, contacts.">
+<meta name="theme-color" id="metaTheme" content="#06121c">
+<meta property="og:title" id="ogTitle" content="Hyule Wines — wine with character">
+<meta property="og:description" id="ogDesc" content="Signature wines from our own vineyards. Come visit us for a tasting.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%2314507a'/%3E%3Ccircle cx='50' cy='50' r='46' fill='none' stroke='%236cc3e0' stroke-width='4'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<!-- Hide the page for a moment while content.json loads, so nothing flashes. Safety timeout shows it anyway. -->
+<script>document.documentElement.classList.add('loading');setTimeout(function(){document.documentElement.classList.remove('loading')},3000);</script>
+</head>
+<body>
+<!--
+  TEXTS, PHOTOS AND COLORS are NOT edited here. Use the admin panel at /admin/
+  (everything is stored in content.json). The text below is only a fallback
+  that is shown if content.json cannot be loaded.
+-->
+<div id="progress"></div>
+
+<nav id="nav">
+  <a href="#top" class="logo"><span data-k="brand.first">Hyule</span> <span class="alt" data-k="brand.second">Wines</span></a>
+  <ul class="links">
+    <li><a href="#top" data-k="nav.home">Home</a></li>
+    <li><a href="#wine" data-k="nav.wine">Wine</a></li>
+    <li><a href="#story" data-k="nav.story">Our Story</a></li>
+    <li><a href="#contacts" data-k="nav.contacts">Contacts</a></li>
+  </ul>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="rings" id="rings" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <p class="eyebrow" data-k="hero.eyebrow">Family winery</p>
+    <h1 id="title"><span data-k="hero.title1">Wine,</span> <em data-k="hero.title2">born</em><br><span data-k="hero.title3">of the sun</span></h1>
+
+    <div class="glass-wrap" aria-hidden="true">
+      <svg class="glass" viewBox="0 0 120 190" width="120" height="190">
+        <defs>
+          <linearGradient id="wg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" style="stop-color:var(--wine-light)"/><stop offset="1" style="stop-color:var(--wine)"/>
+          </linearGradient>
+          <clipPath id="bowl"><path d="M22 14 H98 C98 62 90 100 60 106 C30 100 22 62 22 14Z"/></clipPath>
+        </defs>
+        <g clip-path="url(#bowl)">
+          <g class="wine-fill">
+            <path class="wave" d="M-40 44 q10 -7 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 V130 H-40Z" fill="url(#wg)"/>
+          </g>
+        </g>
+        <path class="gl-stroke" d="M22 14 H98 C98 62 90 100 60 106 C30 100 22 62 22 14Z" fill="rgba(255,255,255,.04)" stroke-width="1.6"/>
+        <path d="M32 24 C33 55 38 80 50 94" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-linecap="round"/>
+        <path class="gl-stroke" d="M60 106 V168" fill="none" stroke-width="1.8"/>
+        <path class="gl-stroke" d="M34 176 Q60 164 86 176" fill="none" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <p class="tagline" data-k="hero.tagline">Signature wines from our own vineyards</p>
+    <div class="btns">
+      <a href="#wine" class="btn solid" data-k="hero.btn1">Our Collection</a>
+      <a href="#contacts" class="btn" data-k="hero.btn2">Book a Tasting</a>
+    </div>
+    <p class="hint" id="hint" data-k="hero.hint">Click anywhere to set down a glass</p>
+  </div>
+  <div class="scroll-hint" aria-hidden="true"></div>
+</header>
+
+<main>
+  <!-- WINE -->
+  <section id="wine">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <small data-k="wine.kicker">Collection</small>
+        <h2 data-k="wine.title">Wine</h2>
+        <div class="line"></div>
+        <p data-k="wine.intro">Three characters, one approach: minimal intervention, maximum terroir.</p>
+      </div>
+
+      <div class="cards" id="wineCards">
+        <article class="card reveal" style="--d:0s">
+          <svg class="bottle" viewBox="0 0 60 190" aria-hidden="true"><path d="M24 4h12v34c0 10 14 20 14 44v96a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8V82c0-24 14-34 14-44Z" style="fill:#0c3454"/><path d="M24 4h12v34c0 10 14 20 14 44v96a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8V82c0-24 14-34 14-44Z" style="fill:none;stroke:var(--gold)" stroke-width="1"/><rect x="10" y="100" width="40" height="52" style="fill:var(--cream)"/><circle cx="30" cy="120" r="6" style="fill:none;stroke:var(--wine)" stroke-width="1.4"/><rect x="17" y="136" width="26" height="2" style="fill:var(--wine)"/><rect x="22" y="2" width="16" height="12" style="fill:var(--wine)"/></svg>
+          <span class="type">Dry red</span>
+          <h3>Pomegranate Ruby</h3>
+          <p>Deep, velvety, with a long finish. Aged in oak barrels for 18 months.</p>
+          <div class="notes"><span>cherry</span><span>black pepper</span><span>vanilla</span></div>
+          <div class="price">from $000 <small>/ bottle</small></div>
+        </article>
+        <article class="card reveal" style="--d:.15s">
+          <svg class="bottle" viewBox="0 0 60 190" aria-hidden="true"><path d="M24 4h12v34c0 10 14 20 14 44v96a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8V82c0-24 14-34 14-44Z" style="fill:#6cc3e0"/><path d="M24 4h12v34c0 10 14 20 14 44v96a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8V82c0-24 14-34 14-44Z" style="fill:none;stroke:var(--gold)" stroke-width="1"/><rect x="10" y="100" width="40" height="52" style="fill:var(--cream)"/><circle cx="30" cy="120" r="6" style="fill:none;stroke:var(--wine)" stroke-width="1.4"/><rect x="17" y="136" width="26" height="2" style="fill:var(--wine)"/><rect x="22" y="2" width="16" height="12" style="fill:var(--wine)"/></svg>
+          <span class="type">Dry white</span>
+          <h3>Golden Dawn</h3>
+          <p>Fresh and bright, with a mineral note. Perfect with seafood and warm evenings.</p>
+          <div class="notes"><span>pear</span><span>citrus</span><span>honey</span></div>
+          <div class="price">from $000 <small>/ bottle</small></div>
+        </article>
+        <article class="card reveal" style="--d:.3s">
+          <svg class="bottle" viewBox="0 0 60 190" aria-hidden="true"><path d="M24 4h12v34c0 10 14 20 14 44v96a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8V82c0-24 14-34 14-44Z" style="fill:#4aa8d6"/><path d="M24 4h12v34c0 10 14 20 14 44v96a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8V82c0-24 14-34 14-44Z" style="fill:none;stroke:var(--gold)" stroke-width="1"/><rect x="10" y="100" width="40" height="52" style="fill:var(--cream)"/><circle cx="30" cy="120" r="6" style="fill:none;stroke:var(--wine)" stroke-width="1.4"/><rect x="17" y="136" width="26" height="2" style="fill:var(--wine)"/><rect x="22" y="2" width="16" height="12" style="fill:var(--wine)"/></svg>
+          <span class="type">Rosé</span>
+          <h3>Morning Dew</h3>
+          <p>Light and lively by nature. The best choice for a celebration or a picnic.</p>
+          <div class="notes"><span>strawberry</span><span>rose</span><span>peach</span></div>
+          <div class="price">from $000 <small>/ bottle</small></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- OUR STORY -->
+  <section id="story">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <small data-k="story.kicker">Journey</small>
+        <h2 data-k="story.title">Our Story</h2>
+        <div class="line"></div>
+      </div>
+
+      <div class="story-grid">
+        <div class="story-art reveal left" id="storyArt">
+          <img class="story-photo" id="storyPhoto" alt="">
+          <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <circle cx="290" cy="130" r="46" style="fill:var(--gold-soft)" opacity=".9"/>
+            <circle cx="290" cy="130" r="70" style="fill:var(--gold)" opacity=".14"/>
+            <path d="M0 330 Q100 270 200 320 T400 300 V500 H0Z" style="fill:var(--bg2)"/>
+            <path d="M0 380 Q120 330 220 375 T400 360 V500 H0Z" style="fill:var(--wine)" opacity=".55"/>
+            <g style="stroke:var(--bg)" stroke-width="3" fill="none" opacity=".55">
+              <path d="M-20 440 Q200 380 420 430"/><path d="M-20 470 Q200 410 420 460"/><path d="M-20 410 Q200 350 420 400"/>
+            </g>
+            <g style="fill:var(--wine-light)">
+              <circle cx="120" cy="402" r="7"/><circle cx="133" cy="410" r="7"/><circle cx="116" cy="416" r="7"/><circle cx="129" cy="424" r="7"/><circle cx="122" cy="436" r="7"/>
+            </g>
+            <path d="M122 396 q-6 -18 14 -26" stroke="#3a9a8a" stroke-width="3" fill="none"/>
+            <path d="M136 372 q16 -4 18 10 q-14 6 -18 -10Z" fill="#3a9a8a"/>
+          </svg>
+        </div>
+
+        <div class="story-text reveal right">
+          <p data-k="story.p1">It all began with a small plot of land and a big dream: to make wine we are proud of and love to share. We grew up among the vines and we know that good grapes are born where they are loved.</p>
+          <p data-k="story.p2">Today we still harvest by hand, carefully select every cluster and give each wine the time it needs to mature. No rush, only patience, hard work and a little bit of magic.</p>
+          <div class="stats" id="stats">
+            <div class="stat"><b data-count="25" data-suffix="+">0</b><span>years of experience</span></div>
+            <div class="stat"><b data-count="40" data-suffix="+">0</b><span>hectares of vines</span></div>
+            <div class="stat"><b data-count="12" data-suffix="+">0</b><span>awards</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline reveal" id="timeline">
+        <div class="tl reveal">
+          <div class="year">1999</div>
+          <div class="txt"><h3>The first vine</h3><p>We planted our first rows on a slope inherited from our grandfather.</p></div>
+        </div>
+        <div class="tl reveal">
+          <div class="year">2008</div>
+          <div class="txt"><h3>The first barrel</h3><p>We released our first batch and bottled it for friends and family.</p></div>
+        </div>
+        <div class="tl reveal">
+          <div class="year">2016</div>
+          <div class="txt"><h3>Our own winery</h3><p>We built a cellar and opened our doors to the first guests.</p></div>
+        </div>
+        <div class="tl reveal">
+          <div class="year">Today</div>
+          <div class="txt"><h3>Wine with character</h3><p>We craft three collections and look forward to welcoming you for a tasting.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTS -->
+  <section id="contacts">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <small data-k="contacts.kicker">Visit us</small>
+        <h2 data-k="contacts.title">Contacts</h2>
+        <div class="line"></div>
+        <p data-k="contacts.intro">Tastings are by appointment only. Write or call us to book your visit.</p>
+      </div>
+
+      <div class="contact-grid">
+        <div class="c-item reveal" style="--d:0s">
+          <svg viewBox="0 0 24 24"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          <h3 data-k="contacts.addressTitle">Address</h3>
+          <p data-k="contacts.address">City, Street, Building 00&#10;Hyule Wines Winery</p>
+        </div>
+        <div class="c-item reveal" style="--d:.12s">
+          <svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></svg>
+          <h3 data-k="contacts.phoneTitle">Phone</h3>
+          <a id="phoneLink" href="tel:+000000000000" data-k="contacts.phone">+0 (000) 000-00-00</a>
+        </div>
+        <div class="c-item reveal" style="--d:.24s">
+          <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          <h3 data-k="contacts.emailTitle">Email</h3>
+          <a id="emailLink" href="mailto:hello@example.com" data-k="contacts.email">hello@example.com</a>
+        </div>
+        <div class="c-item reveal" style="--d:.36s">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <h3 data-k="contacts.hoursTitle">Opening hours</h3>
+          <p data-k="contacts.hours">Every day&#10;11:00 AM — 8:00 PM</p>
+        </div>
+      </div>
+
+      <div class="cta reveal">
+        <h3><span data-k="contacts.ctaBefore">Taste</span> <em data-k="contacts.ctaEm">our wine</em> <span data-k="contacts.ctaAfter">for yourself</span></h3>
+        <a id="ctaBtn" href="mailto:hello@example.com?subject=Tasting" class="btn solid" data-k="contacts.ctaBtn">Book a Tasting</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    © <span id="year"></span> <span data-k="footer.brand">Hyule Wines</span> · <span data-k="footer.text">Excessive consumption of alcohol is harmful to your health</span>
+    <span class="warn" data-k="footer.warn">For adults aged 18 and over only</span>
+  </div>
+</footer>
+
+<script src="site.js"></script>
+</body>
+</html>

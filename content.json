@@ -1,0 +1,106 @@
+{
+  "seo": {
+    "title": "Hyule Wines — wine with character",
+    "description": "Family winery: signature wines made from grapes grown in our own vineyards. Tastings, our story, contacts."
+  },
+  "brand": { "first": "Hyule", "second": "Wines" },
+  "nav": { "home": "Home", "wine": "Wine", "story": "Our Story", "contacts": "Contacts" },
+  "theme": {
+    "bg": "#06121c",
+    "bg2": "#0a1c2b",
+    "wine": "#14507a",
+    "wineLight": "#2a8cc4",
+    "accent": "#6cc3e0",
+    "accentSoft": "#b5e3f2",
+    "text": "#e6f4fa",
+    "muted": "#8fb0c2"
+  },
+  "hero": {
+    "eyebrow": "Family winery",
+    "title1": "Wine,",
+    "title2": "born",
+    "title3": "of the sun",
+    "tagline": "Signature wines from our own vineyards",
+    "btn1": "Our Collection",
+    "btn2": "Book a Tasting",
+    "hint": "Click anywhere to set down a glass",
+    "image": ""
+  },
+  "wine": {
+    "kicker": "Collection",
+    "title": "Wine",
+    "intro": "Three characters, one approach: minimal intervention, maximum terroir.",
+    "items": [
+      {
+        "type": "Dry red",
+        "name": "Pomegranate Ruby",
+        "desc": "Deep, velvety, with a long finish. Aged in oak barrels for 18 months.",
+        "notes": "cherry, black pepper, vanilla",
+        "price": "from $000",
+        "unit": "/ bottle",
+        "bottle": "#0c3454",
+        "image": ""
+      },
+      {
+        "type": "Dry white",
+        "name": "Golden Dawn",
+        "desc": "Fresh and bright, with a mineral note. Perfect with seafood and warm evenings.",
+        "notes": "pear, citrus, honey",
+        "price": "from $000",
+        "unit": "/ bottle",
+        "bottle": "#6cc3e0",
+        "image": ""
+      },
+      {
+        "type": "Rosé",
+        "name": "Morning Dew",
+        "desc": "Light and lively by nature. The best choice for a celebration or a picnic.",
+        "notes": "strawberry, rose, peach",
+        "price": "from $000",
+        "unit": "/ bottle",
+        "bottle": "#4aa8d6",
+        "image": ""
+      }
+    ]
+  },
+  "story": {
+    "kicker": "Journey",
+    "title": "Our Story",
+    "p1": "It all began with a small plot of land and a big dream: to make wine we are proud of and love to share. We grew up among the vines and we know that good grapes are born where they are loved.",
+    "p2": "Today we still harvest by hand, carefully select every cluster and give each wine the time it needs to mature. No rush, only patience, hard work and a little bit of magic.",
+    "image": "",
+    "stats": [
+      { "n": "25+", "label": "years of experience" },
+      { "n": "40+", "label": "hectares of vines" },
+      { "n": "12+", "label": "awards" }
+    ],
+    "timeline": [
+      { "year": "1999", "title": "The first vine", "text": "We planted our first rows on a slope inherited from our grandfather." },
+      { "year": "2008", "title": "The first barrel", "text": "We released our first batch and bottled it for friends and family." },
+      { "year": "2016", "title": "Our own winery", "text": "We built a cellar and opened our doors to the first guests." },
+      { "year": "Today", "title": "Wine with character", "text": "We craft three collections and look forward to welcoming you for a tasting." }
+    ]
+  },
+  "contacts": {
+    "kicker": "Visit us",
+    "title": "Contacts",
+    "intro": "Tastings are by appointment only. Write or call us to book your visit.",
+    "addressTitle": "Address",
+    "address": "City, Street, Building 00\nHyule Wines Winery",
+    "phoneTitle": "Phone",
+    "phone": "+0 (000) 000-00-00",
+    "emailTitle": "Email",
+    "email": "hello@example.com",
+    "hoursTitle": "Opening hours",
+    "hours": "Every day\n11:00 AM — 8:00 PM",
+    "ctaBefore": "Taste",
+    "ctaEm": "our wine",
+    "ctaAfter": "for yourself",
+    "ctaBtn": "Book a Tasting"
+  },
+  "footer": {
+    "brand": "Hyule Wines",
+    "text": "Excessive consumption of alcohol is harmful to your health",
+    "warn": "For adults aged 18 and over only"
+  }
+}
