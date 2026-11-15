@@ -3,623 +3,249 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex,nofollow">
-<title>Site admin</title>
-<style>
-  :root{--ink:#1d2433;--mute:#667085;--line:#e2e6ee;--bg:#f4f6fa;--card:#fff;--brand:#1f6fb2;--brand-d:#165a93;--ok:#13734a;--err:#b3261e;--warn:#8a5a00}
-  *{box-sizing:border-box}
-  [hidden]{display:none!important}
-  html,body{margin:0;height:100%}
-  body{font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
-  button{font:inherit;cursor:pointer}
-  input,textarea{font:inherit;color:inherit}
-
-  /* Login */
-  .login{min-height:100%;display:grid;place-items:center;padding:24px}
-  .login .box{width:min(420px,100%);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:28px;box-shadow:0 10px 30px rgba(20,30,60,.08)}
-  .login h1{margin:0 0 6px;font-size:1.4rem}
-  .login p{margin:0 0 18px;color:var(--mute)}
-
-  /* App layout */
-  .app{display:grid;grid-template-columns:minmax(420px,500px) 1fr;height:100vh}
-  .panel{display:flex;flex-direction:column;min-height:0;background:var(--card);border-right:1px solid var(--line)}
-  .bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-  .bar h1{font-size:1.05rem;margin:0;flex:1;white-space:nowrap}
-  .dirty{font-size:.8rem;color:var(--warn);background:#fff4d6;border-radius:99px;padding:2px 10px}
-  #status{margin:10px 16px 0;padding:10px 12px;border-radius:8px;font-size:.9rem;background:#eef2fb;color:#2a3b66}
-  #status.ok{background:#e4f6ec;color:var(--ok)} #status.err{background:#fdecea;color:var(--err)}
-  #status a{color:inherit;font-weight:600}
-  #form{flex:1;overflow:auto;padding:12px 16px 40px}
-
-  .state{margin:10px 16px 0;padding:8px 12px;border-radius:8px;font-size:.85rem;font-weight:600}
-  .state.warn{background:#fff4d6;color:var(--warn)} .state.live{background:#e4f6ec;color:var(--ok)}
-  .check{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid #f0d9a0;border-radius:10px;background:#fff8e6;font-weight:600;cursor:pointer}
-  .check input{width:20px;height:20px;margin:1px 0 0;flex:none}
-
-  /* Buttons */
-  .btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 14px;color:var(--ink)}
-  .btn:hover{background:#f3f5fa}
-  .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
-  .btn.primary:hover{background:var(--brand-d)}
-  .btn.primary:disabled{opacity:.55;cursor:default}
-  .btn.ghost{background:transparent}
-  .btn.small{padding:4px 9px;font-size:.85rem}
-
-  /* Groups */
-  details.grp{border:1px solid var(--line);border-radius:12px;margin:0 0 12px;background:#fff}
-  details.grp>summary{cursor:pointer;padding:13px 16px;font-weight:650;list-style:none;display:flex;justify-content:space-between;align-items:center}
-  details.grp>summary::after{content:"▾";color:var(--mute);transition:transform .2s}
-  details.grp[open]>summary::after{transform:rotate(180deg)}
-  details>summary::-webkit-details-marker{display:none}
-  .grp-body{padding:2px 16px 16px;display:grid;gap:14px}
-
-  /* Fields */
-  .fld{display:grid;gap:5px}
-  .lab{font-size:.82rem;font-weight:600;color:#3b4560}
-  .help{font-size:.78rem;color:var(--mute)}
-  input[type=text],input[type=password],textarea{width:100%;border:1px solid #cdd3df;border-radius:8px;padding:9px 11px;background:#fff}
-  textarea{resize:vertical;min-height:72px}
-  input[type=text]:focus,input[type=password]:focus,textarea:focus{outline:2px solid #b9d7f3;border-color:var(--brand)}
-  input[type=color]{width:100%;height:40px;padding:3px;border:1px solid #cdd3df;border-radius:8px;background:#fff;cursor:pointer}
-  .colors{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .presets{display:flex;flex-wrap:wrap;gap:8px}
-  .preset{display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
-  .preset:hover{border-color:var(--brand)}
-  .sw{display:inline-flex}.sw i{width:14px;height:22px;display:block}
-  .sw i:first-child{border-radius:4px 0 0 4px}.sw i:last-child{border-radius:0 4px 4px 0}
-
-  /* Images */
-  .imgrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-  .thumb{width:84px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:#eef0f5}
-
-  /* Lists */
-  .list{display:grid;gap:10px}
-  details.item{border:1px solid var(--line);border-radius:10px;background:#fafbfd}
-  details.item>summary{cursor:pointer;padding:9px 12px;display:flex;align-items:center;gap:8px;list-style:none}
-  details.item>summary .lbl{flex:1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  details.item .body{padding:4px 12px 14px;display:grid;gap:12px}
-  .tools{display:flex;gap:4px}
-
-  /* Preview */
-  .pv{display:flex;flex-direction:column;min-width:0;background:#dfe4ee}
-  .pvbar{display:flex;gap:8px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);background:#eef1f7}
-  .pvbar span{flex:1;color:var(--mute);font-size:.85rem}
-  .frame{flex:1;display:flex;justify-content:center;min-height:0;padding:0}
-  .frame iframe{width:100%;height:100%;border:0;background:#06121c}
-  .pv.phone .frame{padding:16px 0}
-  .pv.phone iframe{width:390px;max-width:100%;border-radius:18px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
-  .only-mobile{display:none}
-
-  @media (max-width:900px){
-    .app{grid-template-columns:1fr}
-    .pv{position:fixed;inset:0;z-index:50;display:none}
-    .app.showpv .pv{display:flex}
-    .only-mobile{display:inline-block}
-    .only-desktop{display:none}
-  }
-</style>
+<title>Hyule Wines — wine with character</title>
+<meta name="description" id="metaDesc" content="Family winery: signature wines made from grapes grown in our own vineyards. Tastings, our story, contacts.">
+<meta name="theme-color" id="metaTheme" content="#06121c">
+<meta property="og:title" id="ogTitle" content="Hyule Wines — wine with character">
+<meta property="og:description" id="ogDesc" content="Signature wines from our own vineyards. Come visit us for a tasting.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%2314507a'/%3E%3Ccircle cx='50' cy='50' r='46' fill='none' stroke='%236cc3e0' stroke-width='4'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<!-- Hide the page for a moment while content.json loads, so nothing flashes. Safety timeout shows it anyway. -->
+<script>document.documentElement.classList.add('loading');setTimeout(function(){document.documentElement.classList.remove('loading')},3000);</script>
 </head>
 <body>
-
-<!-- ============ Sign in ============ -->
-<div id="login" class="login" hidden>
-  <form class="box" id="loginForm" autocomplete="off">
-    <h1>Site admin</h1>
-    <p>Enter the access key you were given to edit the website.</p>
-    <div class="fld" id="repoRow" hidden style="margin-bottom:12px">
-      <label class="lab" for="repoIn">Repository (owner/name)</label>
-      <input type="text" id="repoIn" placeholder="owner/name">
+<!--
+  TEXTS, PHOTOS AND COLORS are NOT edited here. Use the admin panel at /admin/
+  (everything is stored in content.json). The text below is only a fallback
+  that is shown if content.json cannot be loaded.
+-->
+<!-- "Under construction" screen. Turned on/off in the admin panel (first section). -->
+<div class="cn" id="construction">
+  <div class="cn-tape top" aria-hidden="true"></div>
+  <div class="cn-card">
+    <div class="cn-logo"><span data-k="brand.first">Hyule</span> <span class="alt" data-k="brand.second">Wines</span></div>
+    <div class="cn-glass" aria-hidden="true">
+      <svg viewBox="0 0 120 190">
+        <defs>
+          <linearGradient id="cwg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--wine-light)"/><stop offset="1" style="stop-color:var(--wine)"/></linearGradient>
+          <clipPath id="cbowl"><path d="M22 14 H98 C98 62 90 100 60 106 C30 100 22 62 22 14Z"/></clipPath>
+        </defs>
+        <g clip-path="url(#cbowl)"><g class="wine-fill"><path class="wave" d="M-40 44 q10 -7 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 V130 H-40Z" fill="url(#cwg)"/></g></g>
+        <path class="gl-stroke" d="M22 14 H98 C98 62 90 100 60 106 C30 100 22 62 22 14Z" fill="rgba(255,255,255,.04)" stroke-width="1.6"/>
+        <path class="gl-stroke" d="M60 106 V168" fill="none" stroke-width="1.8"/>
+        <path class="gl-stroke" d="M34 176 Q60 164 86 176" fill="none" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
     </div>
-    <div class="fld" style="margin-bottom:12px">
-      <label class="lab" for="tokIn">Access key</label>
-      <input type="password" id="tokIn" placeholder="Paste your key here" autocomplete="off" spellcheck="false">
-    </div>
-    <label style="display:flex;gap:8px;align-items:center;margin:4px 0 16px;color:var(--mute);font-size:.9rem">
-      <input type="checkbox" id="remember" checked> Keep me signed in on this device
-    </label>
-    <button class="btn primary" style="width:100%;padding:11px" id="loginBtn">Sign in</button>
-    <div id="loginErr" style="margin-top:14px;color:var(--err);font-size:.9rem" hidden></div>
-  </form>
+    <p class="cn-eyebrow" data-k="construction.eyebrow">Coming soon</p>
+    <h1 class="cn-title" data-k="construction.title">Under Construction</h1>
+    <p class="cn-msg" data-k="construction.message">Our new website is on its way.&#10;Something good is aging in the cellar.</p>
+    <div class="cn-bar" aria-hidden="true"><i></i></div>
+    <a class="cn-contact" id="cnContact" data-k="construction.contact" hidden></a>
+  </div>
+  <div class="cn-tape bottom" aria-hidden="true"></div>
 </div>
 
-<!-- ============ Editor ============ -->
-<div id="app" class="app" hidden>
-  <aside class="panel">
-    <div class="bar">
-      <h1>Site admin</h1>
-      <span class="dirty" id="dirty" hidden>Unsaved</span>
-      <button class="btn only-mobile" id="showPv">Preview</button>
-      <button class="btn primary" id="saveBtn">Save &amp; publish</button>
-      <button class="btn ghost small" id="logout">Log out</button>
+<div id="progress"></div>
+
+<nav id="nav">
+  <a href="#top" class="logo"><span data-k="brand.first">Hyule</span> <span class="alt" data-k="brand.second">Wines</span></a>
+  <ul class="links">
+    <li><a href="#top" data-k="nav.home">Home</a></li>
+    <li><a href="#wine" data-k="nav.wine">Wine</a></li>
+    <li><a href="#story" data-k="nav.story">Our Story</a></li>
+    <li><a href="#contacts" data-k="nav.contacts">Contacts</a></li>
+  </ul>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="rings" id="rings" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <p class="eyebrow" data-k="hero.eyebrow">Family winery</p>
+    <h1 id="title"><span data-k="hero.title1">Wine,</span> <em data-k="hero.title2">born</em><br><span data-k="hero.title3">of the sun</span></h1>
+
+    <div class="glass-wrap" aria-hidden="true">
+      <svg class="glass" viewBox="0 0 120 190" width="120" height="190">
+        <defs>
+          <linearGradient id="wg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" style="stop-color:var(--wine-light)"/><stop offset="1" style="stop-color:var(--wine)"/>
+          </linearGradient>
+          <clipPath id="bowl"><path d="M22 14 H98 C98 62 90 100 60 106 C30 100 22 62 22 14Z"/></clipPath>
+        </defs>
+        <g clip-path="url(#bowl)">
+          <g class="wine-fill">
+            <path class="wave" d="M-40 44 q10 -7 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 V130 H-40Z" fill="url(#wg)"/>
+          </g>
+        </g>
+        <path class="gl-stroke" d="M22 14 H98 C98 62 90 100 60 106 C30 100 22 62 22 14Z" fill="rgba(255,255,255,.04)" stroke-width="1.6"/>
+        <path d="M32 24 C33 55 38 80 50 94" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-linecap="round"/>
+        <path class="gl-stroke" d="M60 106 V168" fill="none" stroke-width="1.8"/>
+        <path class="gl-stroke" d="M34 176 Q60 164 86 176" fill="none" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
     </div>
-    <div id="siteState" class="state"></div>
-    <div id="status" hidden></div>
-    <div id="form"></div>
-  </aside>
-  <section class="pv" id="pvBox">
-    <div class="pvbar">
-      <span>Live preview (not published until you press “Save &amp; publish”)</span>
-      <button class="btn small only-desktop" id="modeDesk">Desktop</button>
-      <button class="btn small only-desktop" id="modePhone">Phone</button>
-      <button class="btn small only-mobile" id="hidePv">← Back to editing</button>
+
+    <p class="tagline" data-k="hero.tagline">Signature wines from our own vineyards</p>
+    <div class="btns">
+      <a href="#wine" class="btn solid" data-k="hero.btn1">Our Collection</a>
+      <a href="#contacts" class="btn" data-k="hero.btn2">Book a Tasting</a>
     </div>
-    <div class="frame"><iframe id="pv" title="Site preview"></iframe></div>
+    <p class="hint" id="hint" data-k="hero.hint">Click anywhere to set down a glass</p>
+  </div>
+  <div class="scroll-hint" aria-hidden="true"></div>
+</header>
+
+<main>
+  <!-- WINE -->
+  <section id="wine">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <small data-k="wine.kicker">Collection</small>
+        <h2 data-k="wine.title">Wine</h2>
+        <div class="line"></div>
+        <p data-k="wine.intro">Three characters, one approach: minimal intervention, maximum terroir.</p>
+      </div>
+
+      <div class="cards" id="wineCards">
+        <article class="card reveal" style="--d:0s">
+          <svg class="bottle" viewBox="0 0 60 190" aria-hidden="true"><path d="M24 4h12v34c0 10 14 20 14 44v96a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8V82c0-24 14-34 14-44Z" style="fill:#0c3454"/><path d="M24 4h12v34c0 10 14 20 14 44v96a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8V82c0-24 14-34 14-44Z" style="fill:none;stroke:var(--gold)" stroke-width="1"/><rect x="10" y="100" width="40" height="52" style="fill:var(--cream)"/><circle cx="30" cy="120" r="6" style="fill:none;stroke:var(--wine)" stroke-width="1.4"/><rect x="17" y="136" width="26" height="2" style="fill:var(--wine)"/><rect x="22" y="2" width="16" height="12" style="fill:var(--wine)"/></svg>
+          <span class="type">Dry red</span>
+          <h3>Pomegranate Ruby</h3>
+          <p>Deep, velvety, with a long finish. Aged in oak barrels for 18 months.</p>
+          <div class="notes"><span>cherry</span><span>black pepper</span><span>vanilla</span></div>
+          <div class="price">from $000 <small>/ bottle</small></div>
+        </article>
+        <article class="card reveal" style="--d:.15s">
+          <svg class="bottle" viewBox="0 0 60 190" aria-hidden="true"><path d="M24 4h12v34c0 10 14 20 14 44v96a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8V82c0-24 14-34 14-44Z" style="fill:#6cc3e0"/><path d="M24 4h12v34c0 10 14 20 14 44v96a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8V82c0-24 14-34 14-44Z" style="fill:none;stroke:var(--gold)" stroke-width="1"/><rect x="10" y="100" width="40" height="52" style="fill:var(--cream)"/><circle cx="30" cy="120" r="6" style="fill:none;stroke:var(--wine)" stroke-width="1.4"/><rect x="17" y="136" width="26" height="2" style="fill:var(--wine)"/><rect x="22" y="2" width="16" height="12" style="fill:var(--wine)"/></svg>
+          <span class="type">Dry white</span>
+          <h3>Golden Dawn</h3>
+          <p>Fresh and bright, with a mineral note. Perfect with seafood and warm evenings.</p>
+          <div class="notes"><span>pear</span><span>citrus</span><span>honey</span></div>
+          <div class="price">from $000 <small>/ bottle</small></div>
+        </article>
+        <article class="card reveal" style="--d:.3s">
+          <svg class="bottle" viewBox="0 0 60 190" aria-hidden="true"><path d="M24 4h12v34c0 10 14 20 14 44v96a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8V82c0-24 14-34 14-44Z" style="fill:#4aa8d6"/><path d="M24 4h12v34c0 10 14 20 14 44v96a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8V82c0-24 14-34 14-44Z" style="fill:none;stroke:var(--gold)" stroke-width="1"/><rect x="10" y="100" width="40" height="52" style="fill:var(--cream)"/><circle cx="30" cy="120" r="6" style="fill:none;stroke:var(--wine)" stroke-width="1.4"/><rect x="17" y="136" width="26" height="2" style="fill:var(--wine)"/><rect x="22" y="2" width="16" height="12" style="fill:var(--wine)"/></svg>
+          <span class="type">Rosé</span>
+          <h3>Morning Dew</h3>
+          <p>Light and lively by nature. The best choice for a celebration or a picnic.</p>
+          <div class="notes"><span>strawberry</span><span>rose</span><span>peach</span></div>
+          <div class="price">from $000 <small>/ bottle</small></div>
+        </article>
+      </div>
+    </div>
   </section>
-</div>
 
-<script>
-/* =====================================================================
-   SETTINGS (set once by the site owner)
-   repo   : your GitHub repository, e.g. "vlad/hyule-wines"
-   branch : leave empty to use the repository's default branch
-   ===================================================================== */
-var CONFIG = { repo: 'OWNER/REPO', branch: '' };
+  <!-- OUR STORY -->
+  <section id="story">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <small data-k="story.kicker">Journey</small>
+        <h2 data-k="story.title">Our Story</h2>
+        <div class="line"></div>
+      </div>
 
-/* ---------- helpers ---------- */
-var API = 'https://api.github.com';
-var HEX = /^#[0-9a-f]{6}$/i;
-var S = { token: '', repo: '', branch: '', sha: null, content: null, snap: '', pending: {}, busy: false, overlay: true };
+      <div class="story-grid">
+        <div class="story-art reveal left" id="storyArt">
+          <img class="story-photo" id="storyPhoto" alt="">
+          <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <circle cx="290" cy="130" r="46" style="fill:var(--gold-soft)" opacity=".9"/>
+            <circle cx="290" cy="130" r="70" style="fill:var(--gold)" opacity=".14"/>
+            <path d="M0 330 Q100 270 200 320 T400 300 V500 H0Z" style="fill:var(--bg2)"/>
+            <path d="M0 380 Q120 330 220 375 T400 360 V500 H0Z" style="fill:var(--wine)" opacity=".55"/>
+            <g style="stroke:var(--bg)" stroke-width="3" fill="none" opacity=".55">
+              <path d="M-20 440 Q200 380 420 430"/><path d="M-20 470 Q200 410 420 460"/><path d="M-20 410 Q200 350 420 400"/>
+            </g>
+            <g style="fill:var(--wine-light)">
+              <circle cx="120" cy="402" r="7"/><circle cx="133" cy="410" r="7"/><circle cx="116" cy="416" r="7"/><circle cx="129" cy="424" r="7"/><circle cx="122" cy="436" r="7"/>
+            </g>
+            <path d="M122 396 q-6 -18 14 -26" stroke="#3a9a8a" stroke-width="3" fill="none"/>
+            <path d="M136 372 q16 -4 18 10 q-14 6 -18 -10Z" fill="#3a9a8a"/>
+          </svg>
+        </div>
 
-function $(s, r) { return (r || document).querySelector(s); }
-function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
-function el(tag, props, kids) {
-  var e = document.createElement(tag);
-  if (props) for (var k in props) {
-    var v = props[k]; if (v === false || v == null) continue;
-    if (k === 'class') e.className = v;
-    else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), v);
-    else e.setAttribute(k, v === true ? '' : v);
-  }
-  (kids || []).forEach(function (c) { e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
-  return e;
-}
-function get(o, p) { var a = p.split('.'); for (var i = 0; i < a.length; i++) { if (o == null) return undefined; o = o[a[i]]; } return o; }
-function setv(o, p, v) {
-  var a = p.split('.'), last = a.pop();
-  a.forEach(function (k, i) { if (o[k] == null || typeof o[k] !== 'object') o[k] = /^\d+$/.test(a[i + 1] || last) ? [] : {}; o = o[k]; });
-  o[last] = v;
-}
-function store(k, v, persist) {
-  try { var st = persist ? localStorage : sessionStorage; if (v == null) { localStorage.removeItem('hw_' + k); sessionStorage.removeItem('hw_' + k); } else st.setItem('hw_' + k, v); } catch (e) {}
-}
-function load(k) { try { return localStorage.getItem('hw_' + k) || sessionStorage.getItem('hw_' + k) || ''; } catch (e) { return ''; } }
-function isSet(r) { return /^[\w.-]+\/[\w.-]+$/.test(r || '') && r !== 'OWNER/REPO'; }
+        <div class="story-text reveal right">
+          <p data-k="story.p1">It all began with a small plot of land and a big dream: to make wine we are proud of and love to share. We grew up among the vines and we know that good grapes are born where they are loved.</p>
+          <p data-k="story.p2">Today we still harvest by hand, carefully select every cluster and give each wine the time it needs to mature. No rush, only patience, hard work and a little bit of magic.</p>
+          <div class="stats" id="stats">
+            <div class="stat"><b data-count="25" data-suffix="+">0</b><span>years of experience</span></div>
+            <div class="stat"><b data-count="40" data-suffix="+">0</b><span>hectares of vines</span></div>
+            <div class="stat"><b data-count="12" data-suffix="+">0</b><span>awards</span></div>
+          </div>
+        </div>
+      </div>
 
-function utf8b64(str) {
-  var b = new TextEncoder().encode(str), s = '';
-  for (var i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000));
-  return btoa(s);
-}
-function b64utf8(b64) {
-  var bin = atob(b64.replace(/\s/g, '')), bytes = new Uint8Array(bin.length);
-  for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return new TextDecoder().decode(bytes);
-}
+      <div class="timeline reveal" id="timeline">
+        <div class="tl reveal">
+          <div class="year">1999</div>
+          <div class="txt"><h3>The first vine</h3><p>We planted our first rows on a slope inherited from our grandfather.</p></div>
+        </div>
+        <div class="tl reveal">
+          <div class="year">2008</div>
+          <div class="txt"><h3>The first barrel</h3><p>We released our first batch and bottled it for friends and family.</p></div>
+        </div>
+        <div class="tl reveal">
+          <div class="year">2016</div>
+          <div class="txt"><h3>Our own winery</h3><p>We built a cellar and opened our doors to the first guests.</p></div>
+        </div>
+        <div class="tl reveal">
+          <div class="year">Today</div>
+          <div class="txt"><h3>Wine with character</h3><p>We craft three collections and look forward to welcoming you for a tasting.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-function gh(path, opts) {
-  opts = opts || {};
-  return fetch(API + path, {
-    method: opts.method || 'GET',
-    headers: { Authorization: 'Bearer ' + S.token, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
-    body: opts.body ? JSON.stringify(opts.body) : undefined,
-    cache: 'no-store'
-  });
-}
-async function apiErr(r) {
-  var m = '';
-  try { m = (await r.json()).message || ''; } catch (e) {}
-  if (r.status === 401) return new Error('This access key does not work (it may be wrong or expired). Ask for a new one.');
-  if (r.status === 403) return new Error('Access denied' + (m ? ' (' + m + ')' : '') + '. The key may be missing permission, or GitHub is limiting requests — try again in a minute.');
-  if (r.status === 404) return new Error('The site repository was not found, or this key has no access to it.');
-  return new Error('GitHub error ' + r.status + (m ? ': ' + m : ''));
-}
+  <!-- CONTACTS -->
+  <section id="contacts">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <small data-k="contacts.kicker">Visit us</small>
+        <h2 data-k="contacts.title">Contacts</h2>
+        <div class="line"></div>
+        <p data-k="contacts.intro">Tastings are by appointment only. Write or call us to book your visit.</p>
+      </div>
 
-/* ---------- status line ---------- */
-function note(msg, kind, link) {
-  var s = $('#status');
-  if (!msg) { s.hidden = true; return; }
-  s.hidden = false; s.className = kind || ''; s.textContent = msg;
-  if (link) { s.appendChild(document.createTextNode(' ')); s.appendChild(el('a', { href: link, target: '_blank', rel: 'noopener' }, ['Open the site ↗'])); }
-}
+      <div class="contact-grid">
+        <div class="c-item reveal" style="--d:0s">
+          <svg viewBox="0 0 24 24"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          <h3 data-k="contacts.addressTitle">Address</h3>
+          <p data-k="contacts.address">City, Street, Building 00&#10;Hyule Wines Winery</p>
+        </div>
+        <div class="c-item reveal" style="--d:.12s">
+          <svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></svg>
+          <h3 data-k="contacts.phoneTitle">Phone</h3>
+          <a id="phoneLink" href="tel:+000000000000" data-k="contacts.phone">+0 (000) 000-00-00</a>
+        </div>
+        <div class="c-item reveal" style="--d:.24s">
+          <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          <h3 data-k="contacts.emailTitle">Email</h3>
+          <a id="emailLink" href="mailto:hello@example.com" data-k="contacts.email">hello@example.com</a>
+        </div>
+        <div class="c-item reveal" style="--d:.36s">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <h3 data-k="contacts.hoursTitle">Opening hours</h3>
+          <p data-k="contacts.hours">Every day&#10;11:00 AM — 8:00 PM</p>
+        </div>
+      </div>
 
-/* ---------- sign in / load ---------- */
-function showLogin(msg) {
-  $('#app').hidden = true; $('#login').hidden = false;
-  $('#repoRow').hidden = isSet(CONFIG.repo);
-  if (!$('#repoIn').value) $('#repoIn').value = load('repo');
-  var e = $('#loginErr'); e.hidden = !msg; e.textContent = msg || '';
-  $('#loginBtn').disabled = false; $('#loginBtn').textContent = 'Sign in';
-}
+      <div class="cta reveal">
+        <h3><span data-k="contacts.ctaBefore">Taste</span> <em data-k="contacts.ctaEm">our wine</em> <span data-k="contacts.ctaAfter">for yourself</span></h3>
+        <a id="ctaBtn" href="mailto:hello@example.com?subject=Tasting" class="btn solid" data-k="contacts.ctaBtn">Book a Tasting</a>
+      </div>
+    </div>
+  </section>
+</main>
 
-async function connect(token, repo) {
-  S.token = token; S.repo = repo;
-  var r = await gh('/repos/' + repo);
-  if (!r.ok) throw await apiErr(r);
-  var info = await r.json();
-  if (!info.permissions || !info.permissions.push) throw new Error('This key can only read the site. It needs permission to write (Contents: Read and write).');
-  S.branch = CONFIG.branch || info.default_branch;
-  await loadContent();
-  $('#login').hidden = true; $('#app').hidden = false;
-  buildForm();
-  var pv = $('#pv'); if (!pv.getAttribute('src')) pv.src = '../index.html?preview=1';
-  updateDirty();
-}
+<footer>
+  <div class="wrap">
+    © <span id="year"></span> <span data-k="footer.brand">Hyule Wines</span> · <span data-k="footer.text">Excessive consumption of alcohol is harmful to your health</span>
+    <span class="warn" data-k="footer.warn">For adults aged 18 and over only</span>
+  </div>
+</footer>
 
-async function loadContent() {
-  var r = await gh('/repos/' + S.repo + '/contents/content.json?ref=' + encodeURIComponent(S.branch) + '&_=' + Date.now());
-  if (r.status === 404) throw new Error('content.json was not found in the repository. Upload the site files first.');
-  if (!r.ok) throw await apiErr(r);
-  var j = await r.json();
-  S.sha = j.sha;
-  S.content = JSON.parse(b64utf8(j.content));
-  S.snap = JSON.stringify(S.content);
-}
-
-$('#loginForm').addEventListener('submit', async function (ev) {
-  ev.preventDefault();
-  var tok = $('#tokIn').value.trim(), repo = isSet(CONFIG.repo) ? CONFIG.repo : $('#repoIn').value.trim();
-  if (!tok) return showLogin('Please paste your access key.');
-  if (!isSet(repo)) return showLogin('Please enter the repository as owner/name.');
-  $('#loginBtn').disabled = true; $('#loginBtn').textContent = 'Checking…';
-  try {
-    await connect(tok, repo);
-    var keep = $('#remember').checked;
-    store('token', tok, keep); store('repo', repo, keep);
-    $('#tokIn').value = '';
-  } catch (e) { showLogin(e.message || 'Could not sign in.'); }
-});
-
-$('#logout').addEventListener('click', function () {
-  if (isDirty() && !confirm('You have unsaved changes. Log out anyway?')) return;
-  store('token', null); store('repo', null);
-  S.token = ''; location.reload();
-});
-
-/* ---------- form schema ---------- */
-var PRESETS = [
-  { name: 'Ocean blue', c: { bg: '#06121c', bg2: '#0a1c2b', wine: '#14507a', wineLight: '#2a8cc4', accent: '#6cc3e0', accentSoft: '#b5e3f2', text: '#e6f4fa', muted: '#8fb0c2' } },
-  { name: 'Burgundy & gold', c: { bg: '#14060c', bg2: '#1d0a12', wine: '#721a30', wineLight: '#a32a47', accent: '#c9a45c', accentSoft: '#e6cf9a', text: '#f4ead8', muted: '#b9a79a' } },
-  { name: 'Forest green', c: { bg: '#07130d', bg2: '#0d1f15', wine: '#1f5a3a', wineLight: '#34915c', accent: '#9ad39a', accentSoft: '#cdeccb', text: '#eaf5ea', muted: '#98b5a0' } },
-  { name: 'Midnight violet', c: { bg: '#0e0a1c', bg2: '#150f2a', wine: '#4b2a8a', wineLight: '#7a4fd0', accent: '#b69cf0', accentSoft: '#dccffa', text: '#efeafb', muted: '#a79fc0' } }
-];
-
-var SCHEMA = [
-  { title: 'Under construction screen', anchor: 'top', preview: 'construction', fields: [
-    { t: 'check', p: 'construction.enabled', label: 'Show the “Under construction” screen instead of the website', hint: 'Turn this OFF when you are ready to launch. This admin panel always stays available.' },
-    { t: 'text', p: 'construction.eyebrow', label: 'Small line above the title' },
-    { t: 'text', p: 'construction.title', label: 'Title' },
-    { t: 'area', p: 'construction.message', label: 'Message', hint: 'Press Enter for a new line.' },
-    { t: 'text', p: 'construction.contact', label: 'Contact line (optional)', hint: 'An email address or a short text. Leave empty to hide.' }
-  ] },
-  { title: 'Site basics', anchor: 'top', fields: [
-    { t: 'text', p: 'brand.first', label: 'Logo: first word' },
-    { t: 'text', p: 'brand.second', label: 'Logo: second word (shown in italics)' },
-    { t: 'text', p: 'nav.home', label: 'Menu: first link' },
-    { t: 'text', p: 'nav.wine', label: 'Menu: Wine' },
-    { t: 'text', p: 'nav.story', label: 'Menu: Our story' },
-    { t: 'text', p: 'nav.contacts', label: 'Menu: Contacts' },
-    { t: 'text', p: 'seo.title', label: 'Browser tab title', hint: 'Also what Google shows as the page title.' },
-    { t: 'area', p: 'seo.description', label: 'Short description for Google', hint: 'One or two sentences about the winery.' }
-  ] },
-  { title: 'Home (top of the page)', anchor: 'top', fields: [
-    { t: 'text', p: 'hero.eyebrow', label: 'Small line above the headline' },
-    { t: 'text', p: 'hero.title1', label: 'Headline: first part' },
-    { t: 'text', p: 'hero.title2', label: 'Headline: highlighted word' },
-    { t: 'text', p: 'hero.title3', label: 'Headline: second line' },
-    { t: 'text', p: 'hero.tagline', label: 'Line under the glass' },
-    { t: 'text', p: 'hero.btn1', label: 'First button' },
-    { t: 'text', p: 'hero.btn2', label: 'Second button' },
-    { t: 'text', p: 'hero.hint', label: 'Hint under the buttons', hint: 'Disappears after the first click. Leave empty to hide.' },
-    { t: 'image', p: 'hero.image', label: 'Background photo (optional)' }
-  ] },
-  { title: 'Wine', anchor: 'wine', fields: [
-    { t: 'text', p: 'wine.kicker', label: 'Small title above' },
-    { t: 'text', p: 'wine.title', label: 'Section title' },
-    { t: 'area', p: 'wine.intro', label: 'Intro text' },
-    { t: 'list', p: 'wine.items', label: 'Wines', labelKey: 'name', itemName: 'Wine', addText: '+ Add a wine',
-      blank: { type: 'Dry red', name: 'New wine', desc: '', notes: '', price: 'from $000', unit: '/ bottle', bottle: '#0c3454', image: '' },
-      fields: [
-        { t: 'text', p: 'type', label: 'Type (e.g. Dry red)' },
-        { t: 'text', p: 'name', label: 'Name' },
-        { t: 'area', p: 'desc', label: 'Description' },
-        { t: 'text', p: 'notes', label: 'Tasting notes', hint: 'Separate with commas: cherry, vanilla, pepper' },
-        { t: 'text', p: 'price', label: 'Price' },
-        { t: 'text', p: 'unit', label: 'Price note (e.g. / bottle)' },
-        { t: 'image', p: 'image', label: 'Photo of the bottle (optional)' },
-        { t: 'color', p: 'bottle', label: 'Bottle color (used when there is no photo)' }
-      ] }
-  ] },
-  { title: 'Our Story', anchor: 'story', fields: [
-    { t: 'text', p: 'story.kicker', label: 'Small title above' },
-    { t: 'text', p: 'story.title', label: 'Section title' },
-    { t: 'area', p: 'story.p1', label: 'First paragraph', rows: 5 },
-    { t: 'area', p: 'story.p2', label: 'Second paragraph', rows: 4 },
-    { t: 'image', p: 'story.image', label: 'Story photo (replaces the illustration)' },
-    { t: 'list', p: 'story.stats', label: 'Numbers', labelKey: 'label', itemName: 'Number', addText: '+ Add a number',
-      blank: { n: '10+', label: 'something' },
-      fields: [
-        { t: 'text', p: 'n', label: 'Number (e.g. 25+)' },
-        { t: 'text', p: 'label', label: 'Caption' }
-      ] },
-    { t: 'list', p: 'story.timeline', label: 'Timeline', labelKey: 'year', itemName: 'Event', addText: '+ Add an event',
-      blank: { year: '2020', title: 'New event', text: '' },
-      fields: [
-        { t: 'text', p: 'year', label: 'Year' },
-        { t: 'text', p: 'title', label: 'Title' },
-        { t: 'area', p: 'text', label: 'Text' }
-      ] }
-  ] },
-  { title: 'Contacts', anchor: 'contacts', fields: [
-    { t: 'text', p: 'contacts.kicker', label: 'Small title above' },
-    { t: 'text', p: 'contacts.title', label: 'Section title' },
-    { t: 'area', p: 'contacts.intro', label: 'Intro text' },
-    { t: 'text', p: 'contacts.addressTitle', label: 'Address: heading' },
-    { t: 'area', p: 'contacts.address', label: 'Address', hint: 'Press Enter for a new line.' },
-    { t: 'text', p: 'contacts.phoneTitle', label: 'Phone: heading' },
-    { t: 'text', p: 'contacts.phone', label: 'Phone number' },
-    { t: 'text', p: 'contacts.emailTitle', label: 'Email: heading' },
-    { t: 'text', p: 'contacts.email', label: 'Email address' },
-    { t: 'text', p: 'contacts.hoursTitle', label: 'Opening hours: heading' },
-    { t: 'area', p: 'contacts.hours', label: 'Opening hours', hint: 'Press Enter for a new line.' },
-    { t: 'text', p: 'contacts.ctaBefore', label: 'Big call to action: start' },
-    { t: 'text', p: 'contacts.ctaEm', label: 'Big call to action: highlighted words' },
-    { t: 'text', p: 'contacts.ctaAfter', label: 'Big call to action: end' },
-    { t: 'text', p: 'contacts.ctaBtn', label: 'Call to action: button text' }
-  ] },
-  { title: 'Footer', anchor: 'contacts', fields: [
-    { t: 'text', p: 'footer.brand', label: 'Name after © and year' },
-    { t: 'text', p: 'footer.text', label: 'Footer text' },
-    { t: 'text', p: 'footer.warn', label: 'Second footer line' }
-  ] },
-  { title: 'Colors', anchor: 'top', fields: [
-    { t: 'presets' },
-    { t: 'colors', fields: [
-      { p: 'theme.bg', label: 'Page background' },
-      { p: 'theme.bg2', label: 'Section background' },
-      { p: 'theme.wine', label: 'Buttons & dark accents' },
-      { p: 'theme.wineLight', label: 'Bright accent (progress bar, glow)' },
-      { p: 'theme.accent', label: 'Highlight color' },
-      { p: 'theme.accentSoft', label: 'Light highlight (headline word)' },
-      { p: 'theme.text', label: 'Main text' },
-      { p: 'theme.muted', label: 'Secondary text' }
-    ] }
-  ] }
-];
-
-/* ---------- form building ---------- */
-function buildForm() {
-  var box = $('#form'); box.textContent = '';
-  SCHEMA.forEach(function (g, gi) {
-    var d = el('details', { class: 'grp' }, [el('summary', null, [g.title])]);
-    if (gi === 0) d.open = true;
-    var body = el('div', { class: 'grp-body' });
-    g.fields.forEach(function (f) { body.appendChild(fieldEl(f, '')); });
-    d.appendChild(body);
-    d.addEventListener('toggle', function () {
-      if (!d.open) return;
-      S.overlay = g.preview === 'construction';
-      post({ type: 'preview-overlay', show: S.overlay });
-      if (g.anchor && !S.overlay) post({ type: 'preview-scroll', id: g.anchor });
-    });
-    box.appendChild(d);
-  });
-}
-
-function fieldEl(f, base) {
-  var path = f.p ? (base ? base + '.' + f.p : f.p) : '';
-  if (f.t === 'list') return listEl(f, path);
-  if (f.t === 'image') return imageEl(f, path);
-  if (f.t === 'presets') return presetsEl();
-  if (f.t === 'check') {
-    var cb = el('input', { type: 'checkbox' });
-    cb.checked = get(S.content, path) === true; cb.setAttribute('data-path', path);
-    cb.addEventListener('change', function () { setv(S.content, path, cb.checked); changed(); });
-    var cw = el('div', { class: 'fld' }, [el('label', { class: 'check' }, [cb, el('span', null, [f.label])])]);
-    if (f.hint) cw.appendChild(el('span', { class: 'help' }, [f.hint]));
-    return cw;
-  }
-  if (f.t === 'colors') {
-    var grid = el('div', { class: 'colors' });
-    f.fields.forEach(function (c) { grid.appendChild(fieldEl({ t: 'color', p: c.p, label: c.label }, '')); });
-    return grid;
-  }
-  var wrap = el('label', { class: 'fld' }, [el('span', { class: 'lab' }, [f.label])]);
-  var inp = f.t === 'area' ? el('textarea', { rows: f.rows || 3 }) : el('input', { type: f.t === 'color' ? 'color' : 'text' });
-  inp.setAttribute('data-path', path);
-  var v = get(S.content, path);
-  inp.value = f.t === 'color' ? (HEX.test(v) ? v : '#000000') : (v == null ? '' : v);
-  inp.addEventListener('input', function () { setv(S.content, path, inp.value); changed(); });
-  wrap.appendChild(inp);
-  if (f.hint) wrap.appendChild(el('span', { class: 'help' }, [f.hint]));
-  return wrap;
-}
-
-function presetsEl() {
-  var box = el('div', { class: 'fld' }, [el('span', { class: 'lab' }, ['Ready-made color schemes'])]);
-  var row = el('div', { class: 'presets' });
-  PRESETS.forEach(function (p) {
-    var sw = el('span', { class: 'sw' }, [p.c.bg, p.c.wine, p.c.accent, p.c.accentSoft].map(function (c) { var i = el('i'); i.style.background = c; return i; }));
-    row.appendChild(el('button', {
-      type: 'button', class: 'preset', onclick: function () {
-        S.content.theme = Object.assign({}, S.content.theme || {}, p.c);
-        $$('[data-path^="theme."]').forEach(function (i) { i.value = get(S.content, i.getAttribute('data-path')); });
-        changed();
-      }
-    }, [sw, p.name]));
-  });
-  box.appendChild(row);
-  box.appendChild(el('span', { class: 'help' }, ['Pick a scheme, then fine-tune any color below.']));
-  return box;
-}
-
-function listEl(f, path) {
-  var wrap = el('div', { class: 'fld' }, [el('span', { class: 'lab' }, [f.label])]);
-  var list = el('div', { class: 'list' });
-  wrap.appendChild(list);
-  var add = el('button', { type: 'button', class: 'btn', onclick: function () {
-    var arr = get(S.content, path); if (!Array.isArray(arr)) { setv(S.content, path, []); arr = get(S.content, path); }
-    arr.push(JSON.parse(JSON.stringify(f.blank)));
-    draw(arr.length - 1); changed();
-  } }, [f.addText]);
-  wrap.appendChild(add);
-
-  function draw(openIdx) {
-    list.textContent = '';
-    var arr = get(S.content, path) || [];
-    arr.forEach(function (item, i) {
-      var tool = function (txt, title, fn) {
-        return el('button', { type: 'button', class: 'btn small', title: title, onclick: function (e) { e.preventDefault(); e.stopPropagation(); fn(); } }, [txt]);
-      };
-      var lbl = el('span', { class: 'lbl', 'data-lblpath': path + '.' + i + '.' + f.labelKey, 'data-fallback': f.itemName + ' ' + (i + 1) }, [item[f.labelKey] || (f.itemName + ' ' + (i + 1))]);
-      var tools = el('span', { class: 'tools' }, [
-        tool('↑', 'Move up', function () { if (i > 0) { arr.splice(i - 1, 0, arr.splice(i, 1)[0]); draw(i - 1); changed(); } }),
-        tool('↓', 'Move down', function () { if (i < arr.length - 1) { arr.splice(i + 1, 0, arr.splice(i, 1)[0]); draw(i + 1); changed(); } }),
-        tool('✕', 'Remove', function () { if (confirm('Remove this item?')) { arr.splice(i, 1); draw(); changed(); } })
-      ]);
-      var det = el('details', { class: 'item' }, [el('summary', null, [lbl, tools])]);
-      if (i === openIdx) det.open = true;
-      var body = el('div', { class: 'body' });
-      f.fields.forEach(function (sf) { body.appendChild(fieldEl(sf, path + '.' + i)); });
-      det.appendChild(body);
-      list.appendChild(det);
-    });
-    if (!arr.length) list.appendChild(el('span', { class: 'help' }, ['Nothing here yet.']));
-  }
-  draw();
-  return wrap;
-}
-
-/* ---------- photos ---------- */
-async function prepImage(file) {
-  if (!/^image\//.test(file.type)) throw new Error('Please choose an image file (JPG or PNG).');
-  var bmp;
-  try { bmp = await createImageBitmap(file, { imageOrientation: 'from-image' }); }
-  catch (e) {
-    bmp = await new Promise(function (res, rej) {
-      var im = new Image();
-      im.onload = function () { res(im); };
-      im.onerror = function () { rej(new Error('This image format is not supported. Try a JPG or PNG.')); };
-      im.src = URL.createObjectURL(file);
-    });
-  }
-  var w = bmp.width || bmp.naturalWidth, h = bmp.height || bmp.naturalHeight;
-  var sc = Math.min(1, 1600 / Math.max(w, h));
-  var c = document.createElement('canvas'); c.width = Math.round(w * sc); c.height = Math.round(h * sc);
-  var x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(bmp, 0, 0, c.width, c.height);
-  var q = .86, url;
-  do { url = c.toDataURL('image/jpeg', q); q -= .1; } while (url.length > 1.9e6 && q > .3);
-  var base = (file.name || 'photo').replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'photo';
-  var path = 'images/' + base + '-' + Date.now().toString(36) + '.jpg';
-  return { path: path, dataUrl: url, b64: url.split(',')[1], uploaded: false };
-}
-
-function imageEl(f, path) {
-  var box = el('div', { class: 'fld' }, [el('span', { class: 'lab' }, [f.label])]);
-  var th = el('img', { class: 'thumb', alt: '' });
-  var up = el('button', { type: 'button', class: 'btn' }, ['Upload photo']);
-  var rm = el('button', { type: 'button', class: 'btn ghost' }, ['Remove']);
-  var fi = el('input', { type: 'file', accept: 'image/*', hidden: true });
-  function show() {
-    var v = get(S.content, path) || '';
-    var src = v ? (S.pending[v] ? S.pending[v].dataUrl : '../' + v) : '';
-    if (src) { th.src = src; th.hidden = false; } else { th.removeAttribute('src'); th.hidden = true; }
-    rm.hidden = !v; up.textContent = v ? 'Replace photo' : 'Upload photo';
-  }
-  up.addEventListener('click', function () { fi.click(); });
-  rm.addEventListener('click', function () { setv(S.content, path, ''); show(); changed(); });
-  fi.addEventListener('change', async function () {
-    var file = fi.files[0]; fi.value = ''; if (!file) return;
-    try {
-      note('Preparing photo…');
-      var r = await prepImage(file);
-      S.pending[r.path] = r; setv(S.content, path, r.path); show(); changed(); note('');
-    } catch (e) { note(e.message || 'Could not read this photo.', 'err'); }
-  });
-  box.appendChild(el('div', { class: 'imgrow' }, [th, up, rm, fi]));
-  box.appendChild(el('span', { class: 'help' }, ['JPG or PNG. Big photos are shrunk automatically.']));
-  show();
-  return box;
-}
-
-/* ---------- changes, preview, dirty state ---------- */
-function isDirty() { return JSON.stringify(S.content) !== S.snap; }
-function updateDirty() { $('#dirty').hidden = !isDirty(); updateState(); }
-function updateState() {
-  var box = $('#siteState'); if (!S.content) return;
-  var pub = false; try { pub = JSON.parse(S.snap).construction.enabled === true; } catch (e) {}
-  var draft = get(S.content, 'construction.enabled') === true;
-  var txt = pub ? 'Visitors now see: the “Under construction” screen' : 'Visitors now see: the full website';
-  if (draft !== pub) txt += ' — this will change to ' + (draft ? 'the “Under construction” screen' : 'the full website') + ' after you publish';
-  box.textContent = txt; box.className = 'state ' + (pub ? 'warn' : 'live');
-}
-var pvTimer, pvReady = false;
-function post(msg) { var w = $('#pv').contentWindow; if (w) w.postMessage(msg, location.origin); }
-function sendPreview() {
-  if (!pvReady) return;
-  var c = JSON.parse(JSON.stringify(S.content));
-  (function walk(o) {
-    for (var k in o) {
-      if (typeof o[k] === 'string' && S.pending[o[k]]) o[k] = S.pending[o[k]].dataUrl;
-      else if (o[k] && typeof o[k] === 'object') walk(o[k]);
-    }
-  })(c);
-  post({ type: 'preview', content: c });
-  post({ type: 'preview-overlay', show: !!S.overlay });
-}
-function changed() {
-  updateDirty();
-  $$('[data-lblpath]').forEach(function (s) { s.textContent = get(S.content, s.getAttribute('data-lblpath')) || s.getAttribute('data-fallback'); });
-  clearTimeout(pvTimer); pvTimer = setTimeout(sendPreview, 120);
-}
-window.addEventListener('message', function (e) {
-  if (e.origin !== location.origin || !e.data) return;
-  if (e.data.type === 'preview-ready') { pvReady = true; sendPreview(); }
-});
-window.addEventListener('beforeunload', function (e) { if (S.content && isDirty()) { e.preventDefault(); e.returnValue = ''; } });
-
-/* ---------- save & publish ---------- */
-$('#saveBtn').addEventListener('click', async function () {
-  if (S.busy) return;
-  if (!isDirty()) { note('Nothing to publish — no changes yet.'); return; }
-  S.busy = true; $('#saveBtn').disabled = true;
-  try {
-    var json = JSON.stringify(S.content);
-    var used = Object.keys(S.pending).filter(function (p) { return json.indexOf(p) > -1 && !S.pending[p].uploaded; });
-    for (var i = 0; i < used.length; i++) {
-      note('Uploading photo ' + (i + 1) + ' of ' + used.length + '…');
-      var p = S.pending[used[i]];
-      var up = await gh('/repos/' + S.repo + '/contents/' + p.path, { method: 'PUT', body: { message: 'Add photo ' + p.path, content: p.b64, branch: S.branch } });
-      if (!up.ok) throw await apiErr(up);
-      p.uploaded = true;
-    }
-    note('Saving…');
-    var body = { message: 'Update site content (admin panel)', content: utf8b64(JSON.stringify(S.content, null, 2) + '\n'), branch: S.branch };
-    if (S.sha) body.sha = S.sha;
-    var r = await gh('/repos/' + S.repo + '/contents/content.json', { method: 'PUT', body: body });
-    if (r.status === 409 || r.status === 422) throw new Error('Someone else saved changes at the same time. Reload this page to get the latest version (your unsaved edits on this page will be lost).');
-    if (!r.ok) throw await apiErr(r);
-    var j = await r.json();
-    S.sha = j.content.sha; S.snap = JSON.stringify(S.content);
-    note('Published! The site will show your changes in about 1–2 minutes.', 'ok', '../');
-  } catch (e) { note(e.message || 'Could not save.', 'err'); }
-  S.busy = false; $('#saveBtn').disabled = false; updateDirty();
-});
-
-/* ---------- preview controls ---------- */
-$('#modeDesk').addEventListener('click', function () { $('#pvBox').classList.remove('phone'); });
-$('#modePhone').addEventListener('click', function () { $('#pvBox').classList.add('phone'); });
-$('#showPv').addEventListener('click', function () { $('#app').classList.add('showpv'); });
-$('#hidePv').addEventListener('click', function () { $('#app').classList.remove('showpv'); });
-
-/* ---------- start ---------- */
-(async function boot() {
-  var tok = load('token'), repo = isSet(CONFIG.repo) ? CONFIG.repo : load('repo');
-  if (tok && isSet(repo)) {
-    try { await connect(tok, repo); return; }
-    catch (e) { showLogin(e.message); return; }
-  }
-  showLogin();
-})();
-</script>
+<script src="site.js"></script>
 </body>
 </html>
