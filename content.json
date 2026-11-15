@@ -3,6 +3,13 @@
     "title": "Hyule Wines — wine with character",
     "description": "Family winery: signature wines made from grapes grown in our own vineyards. Tastings, our story, contacts."
   },
+   "construction": {
+    "enabled": true,
+    "eyebrow": "Coming soon",
+    "title": "Under Construction",
+    "message": "Our new website is on its way.\nSomething good is aging in the cellar.",
+    "contact": ""
+  },
   "brand": {
     "first": "Hyule",
     "second": "Wines"
