@@ -8,6 +8,7 @@
   var root = document.documentElement;
   if (PREVIEW) root.classList.add('preview');
 
+  var BYPASS = /[?&]bypass=1/.test(location.search);       // ?bypass=1 shows the real site even while under construction
   var HEX = /^#[0-9a-f]{6}$/i;
   var touch = matchMedia('(hover:none)').matches;
   var canHover = matchMedia('(hover:hover)').matches;
@@ -49,6 +50,10 @@
       io.unobserve(en.target);
     });
   }, { threshold: .15, rootMargin: '0px 0px -6% 0px' });
+  // After a card / contact tile has finished its reveal animation, give it fast hover transitions
+  document.addEventListener('transitionend', function (e) {
+    if (e.propertyName === 'opacity' && e.target.classList && e.target.classList.contains('reveal')) e.target.classList.add('settled');
+  });
   function watch() {
     $$('.reveal').forEach(function (el) { if (!el.classList.contains('in')) io.observe(el); });
   }
@@ -103,6 +108,21 @@
     var s = c.seo || {};
     if (s.title) { document.title = s.title; $('#ogTitle').setAttribute('content', s.title); }
     if (s.description) { $('#metaDesc').setAttribute('content', s.description); $('#ogDesc').setAttribute('content', s.description); }
+  }
+
+  function setConstruction(on) { root.classList.toggle('construction-on', !!on); }
+  function applyConstruction(c) {
+    var k = c.construction || {};
+    var cc = $('#cnContact'), v = typeof k.contact === 'string' ? k.contact.trim() : '';
+    cc.hidden = !v;
+    if (/^[^\s@]+@[^\s@]+$/.test(v)) cc.setAttribute('href', 'mailto:' + v); else cc.removeAttribute('href');
+    if (PREVIEW) return;                                    // in the admin the editor decides what to show
+    var on = k.enabled === true && !BYPASS;
+    setConstruction(on);
+    if (on) {
+      var m = document.createElement('meta'); m.name = 'robots'; m.content = 'noindex,nofollow'; document.head.appendChild(m);
+      document.title = ((k.title || 'Under Construction') + ' — ' + (get(c, 'brand.first') || '') + ' ' + (get(c, 'brand.second') || '')).trim();
+    }
   }
 
   function applyImages(c) {
@@ -187,6 +207,7 @@
     applyLinks(c);
     applySeo(c);
     applyImages(c);
+    applyConstruction(c);
     renderWine(get(c, 'wine.items'));
     renderStats(get(c, 'story.stats'));
     renderTimeline(get(c, 'story.timeline'));
@@ -277,6 +298,7 @@
     addEventListener('message', function (e) {
       if (e.origin !== location.origin || e.source !== parent || !e.data) return;
       if (e.data.type === 'preview' && e.data.content) render(e.data.content);
+      if (e.data.type === 'preview-overlay') setConstruction(e.data.show);
       if (e.data.type === 'preview-scroll') {
         var t = document.getElementById(e.data.id);
         if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });

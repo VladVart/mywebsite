@@ -23,6 +23,32 @@
   (everything is stored in content.json). The text below is only a fallback
   that is shown if content.json cannot be loaded.
 -->
+<!-- "Under construction" screen. Turned on/off in the admin panel (first section). -->
+<div class="cn" id="construction">
+  <div class="cn-tape top" aria-hidden="true"></div>
+  <div class="cn-card">
+    <div class="cn-logo"><span data-k="brand.first">Hyule</span> <span class="alt" data-k="brand.second">Wines</span></div>
+    <div class="cn-glass" aria-hidden="true">
+      <svg viewBox="0 0 120 190">
+        <defs>
+          <linearGradient id="cwg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--wine-light)"/><stop offset="1" style="stop-color:var(--wine)"/></linearGradient>
+          <clipPath id="cbowl"><path d="M22 14 H98 C98 62 90 100 60 106 C30 100 22 62 22 14Z"/></clipPath>
+        </defs>
+        <g clip-path="url(#cbowl)"><g class="wine-fill"><path class="wave" d="M-40 44 q10 -7 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 V130 H-40Z" fill="url(#cwg)"/></g></g>
+        <path class="gl-stroke" d="M22 14 H98 C98 62 90 100 60 106 C30 100 22 62 22 14Z" fill="rgba(255,255,255,.04)" stroke-width="1.6"/>
+        <path class="gl-stroke" d="M60 106 V168" fill="none" stroke-width="1.8"/>
+        <path class="gl-stroke" d="M34 176 Q60 164 86 176" fill="none" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <p class="cn-eyebrow" data-k="construction.eyebrow">Coming soon</p>
+    <h1 class="cn-title" data-k="construction.title">Under Construction</h1>
+    <p class="cn-msg" data-k="construction.message">Our new website is on its way.&#10;Something good is aging in the cellar.</p>
+    <div class="cn-bar" aria-hidden="true"><i></i></div>
+    <a class="cn-contact" id="cnContact" data-k="construction.contact" hidden></a>
+  </div>
+  <div class="cn-tape bottom" aria-hidden="true"></div>
+</div>
+
 <div id="progress"></div>
 
 <nav id="nav">
