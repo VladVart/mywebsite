@@ -31,6 +31,11 @@
   #status a{color:inherit;font-weight:600}
   #form{flex:1;overflow:auto;padding:12px 16px 40px}
 
+  .state{margin:10px 16px 0;padding:8px 12px;border-radius:8px;font-size:.85rem;font-weight:600}
+  .state.warn{background:#fff4d6;color:var(--warn)} .state.live{background:#e4f6ec;color:var(--ok)}
+  .check{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid #f0d9a0;border-radius:10px;background:#fff8e6;font-weight:600;cursor:pointer}
+  .check input{width:20px;height:20px;margin:1px 0 0;flex:none}
+
   /* Buttons */
   .btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 14px;color:var(--ink)}
   .btn:hover{background:#f3f5fa}
@@ -52,9 +57,9 @@
   .fld{display:grid;gap:5px}
   .lab{font-size:.82rem;font-weight:600;color:#3b4560}
   .help{font-size:.78rem;color:var(--mute)}
-  input[type=text],textarea{width:100%;border:1px solid #cdd3df;border-radius:8px;padding:9px 11px;background:#fff}
+  input[type=text],input[type=password],textarea{width:100%;border:1px solid #cdd3df;border-radius:8px;padding:9px 11px;background:#fff}
   textarea{resize:vertical;min-height:72px}
-  input[type=text]:focus,textarea:focus{outline:2px solid #b9d7f3;border-color:var(--brand)}
+  input[type=text]:focus,input[type=password]:focus,textarea:focus{outline:2px solid #b9d7f3;border-color:var(--brand)}
   input[type=color]{width:100%;height:40px;padding:3px;border:1px solid #cdd3df;border-radius:8px;background:#fff;cursor:pointer}
   .colors{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .presets{display:flex;flex-wrap:wrap;gap:8px}
@@ -107,7 +112,7 @@
     </div>
     <div class="fld" style="margin-bottom:12px">
       <label class="lab" for="tokIn">Access key</label>
-      <input type="text" id="tokIn" style="-webkit-text-security:disc" placeholder="Paste your key here" autocomplete="off" spellcheck="false">
+      <input type="password" id="tokIn" placeholder="Paste your key here" autocomplete="off" spellcheck="false">
     </div>
     <label style="display:flex;gap:8px;align-items:center;margin:4px 0 16px;color:var(--mute);font-size:.9rem">
       <input type="checkbox" id="remember" checked> Keep me signed in on this device
@@ -127,6 +132,7 @@
       <button class="btn primary" id="saveBtn">Save &amp; publish</button>
       <button class="btn ghost small" id="logout">Log out</button>
     </div>
+    <div id="siteState" class="state"></div>
     <div id="status" hidden></div>
     <div id="form"></div>
   </aside>
@@ -147,12 +153,12 @@
    repo   : your GitHub repository, e.g. "vlad/hyule-wines"
    branch : leave empty to use the repository's default branch
    ===================================================================== */
-var CONFIG = { repo: 'OWNER/REPO', branch: 'https://vladvart.github.io/mywebsite/' };
+var CONFIG = { repo: 'OWNER/REPO', branch: '' };
 
 /* ---------- helpers ---------- */
 var API = 'https://api.github.com';
 var HEX = /^#[0-9a-f]{6}$/i;
-var S = { token: '', repo: '', branch: '', sha: null, content: null, snap: '', pending: {}, busy: false };
+var S = { token: '', repo: '', branch: '', sha: null, content: null, snap: '', pending: {}, busy: false, overlay: true };
 
 function $(s, r) { return (r || document).querySelector(s); }
 function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
@@ -220,7 +226,7 @@ function note(msg, kind, link) {
 function showLogin(msg) {
   $('#app').hidden = true; $('#login').hidden = false;
   $('#repoRow').hidden = isSet(CONFIG.repo);
-  $('#repoIn').value = load('repo');
+  if (!$('#repoIn').value) $('#repoIn').value = load('repo');
   var e = $('#loginErr'); e.hidden = !msg; e.textContent = msg || '';
   $('#loginBtn').disabled = false; $('#loginBtn').textContent = 'Sign in';
 }
@@ -278,6 +284,13 @@ var PRESETS = [
 ];
 
 var SCHEMA = [
+  { title: 'Under construction screen', anchor: 'top', preview: 'construction', fields: [
+    { t: 'check', p: 'construction.enabled', label: 'Show the “Under construction” screen instead of the website', hint: 'Turn this OFF when you are ready to launch. This admin panel always stays available.' },
+    { t: 'text', p: 'construction.eyebrow', label: 'Small line above the title' },
+    { t: 'text', p: 'construction.title', label: 'Title' },
+    { t: 'area', p: 'construction.message', label: 'Message', hint: 'Press Enter for a new line.' },
+    { t: 'text', p: 'construction.contact', label: 'Contact line (optional)', hint: 'An email address or a short text. Leave empty to hide.' }
+  ] },
   { title: 'Site basics', anchor: 'top', fields: [
     { t: 'text', p: 'brand.first', label: 'Logo: first word' },
     { t: 'text', p: 'brand.second', label: 'Logo: second word (shown in italics)' },
@@ -382,7 +395,12 @@ function buildForm() {
     var body = el('div', { class: 'grp-body' });
     g.fields.forEach(function (f) { body.appendChild(fieldEl(f, '')); });
     d.appendChild(body);
-    d.addEventListener('toggle', function () { if (d.open && g.anchor) post({ type: 'preview-scroll', id: g.anchor }); });
+    d.addEventListener('toggle', function () {
+      if (!d.open) return;
+      S.overlay = g.preview === 'construction';
+      post({ type: 'preview-overlay', show: S.overlay });
+      if (g.anchor && !S.overlay) post({ type: 'preview-scroll', id: g.anchor });
+    });
     box.appendChild(d);
   });
 }
@@ -392,6 +410,14 @@ function fieldEl(f, base) {
   if (f.t === 'list') return listEl(f, path);
   if (f.t === 'image') return imageEl(f, path);
   if (f.t === 'presets') return presetsEl();
+  if (f.t === 'check') {
+    var cb = el('input', { type: 'checkbox' });
+    cb.checked = get(S.content, path) === true; cb.setAttribute('data-path', path);
+    cb.addEventListener('change', function () { setv(S.content, path, cb.checked); changed(); });
+    var cw = el('div', { class: 'fld' }, [el('label', { class: 'check' }, [cb, el('span', null, [f.label])])]);
+    if (f.hint) cw.appendChild(el('span', { class: 'help' }, [f.hint]));
+    return cw;
+  }
   if (f.t === 'colors') {
     var grid = el('div', { class: 'colors' });
     f.fields.forEach(function (c) { grid.appendChild(fieldEl({ t: 'color', p: c.p, label: c.label }, '')); });
@@ -517,7 +543,15 @@ function imageEl(f, path) {
 
 /* ---------- changes, preview, dirty state ---------- */
 function isDirty() { return JSON.stringify(S.content) !== S.snap; }
-function updateDirty() { $('#dirty').hidden = !isDirty(); }
+function updateDirty() { $('#dirty').hidden = !isDirty(); updateState(); }
+function updateState() {
+  var box = $('#siteState'); if (!S.content) return;
+  var pub = false; try { pub = JSON.parse(S.snap).construction.enabled === true; } catch (e) {}
+  var draft = get(S.content, 'construction.enabled') === true;
+  var txt = pub ? 'Visitors now see: the “Under construction” screen' : 'Visitors now see: the full website';
+  if (draft !== pub) txt += ' — this will change to ' + (draft ? 'the “Under construction” screen' : 'the full website') + ' after you publish';
+  box.textContent = txt; box.className = 'state ' + (pub ? 'warn' : 'live');
+}
 var pvTimer, pvReady = false;
 function post(msg) { var w = $('#pv').contentWindow; if (w) w.postMessage(msg, location.origin); }
 function sendPreview() {
@@ -530,6 +564,7 @@ function sendPreview() {
     }
   })(c);
   post({ type: 'preview', content: c });
+  post({ type: 'preview-overlay', show: !!S.overlay });
 }
 function changed() {
   updateDirty();
